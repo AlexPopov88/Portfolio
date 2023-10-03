@@ -1,0 +1,487 @@
+---
+title: "Cyclistic bike-share analysis"
+author: "Aleksandr Popov"
+date: "2023-09-20"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# **How Does a Bike-Share Navigate Speedy Success?**
+
+## Analysis data about casual riders vs. annual members.
+
+![](Cyclistic.png)
+
+## Ask
+
+### Scenario:
+
+Cyclistic is a bike-share company in Chicago. The director of marketing, Lily Moreno, believes the company's future success depends on maximizing the number of annual memberships. The marketing analyst team need to understand how casual riders (with single-ride and full-day passes) and annual members use Cyclistic bikes differently. From these insights, the marketing analyst team will design a new marketing strategy to convert casual riders into annual members.
+
+### The main aim of the project:
+
+***Design marketing strategies aimed at converting casual riders into annual members.***
+
+### Three questions to answer:
+
+-   *How do annual members and casual riders use Cyclistic bikes differently?*
+-   Why would casual riders buy Cyclistic annual memberships?
+-   How can Cyclistic use digital media to influence casual riders to become members?
+
+#### Stakeholders:
+
+-   Lily Moreno - the director of marketing
+-   Cyclistic executive team - this team will decide whether to approve the recommended marketing program.
+
+In order to answer the key business questions, I'll follow the steps of the data analysis process:
+
+-   Ask
+
+-   Prepare
+
+-   Process
+
+-   Analyze
+
+-   Share
+
+-   Act
+
+**Deliverable:[\
+[*✓*] *A clear statement of the business task*]{.underline}**
+
+## Prepare
+
+The data has been made available by Motivate International Inc. (under the licence) and it is located here: [link](https://divvy-tripdata.s3.amazonaws.com/index.html). So according to the licence we can say that the data is reliable and original. We have some restrictions on working with the data: data-privacy issues prohibit from using riders' personally identifiable information.
+
+The data is organized by periods, that included in its file names. Data source contains data from 2013 till July 2023:
+
+-   2013 year: data for the whole year is in one file;
+-   2014-2017 years: one file contains two quarters;
+-   2018-1 quarter 2020: one file contains a quarter;
+-   April 2020-July 2023: one file contains a month.
+
+In my case study I'll explore only data for entire 2022 year. It'll make our analysis more comprehensive, because we'll cover all the year and all seasons. Also I chosen 2022 year because it's the last full year we have, so we can say that our data is current as well.
+
+Let's download data for every month of 2022 year: we'll get 12 zip files for every month. Create folder for our project, subfolder for ZIP files and put downloaded files into it. After extracting all files we'll get 12 csv files. Create one more subfolder for CSV files and save them into it.
+
+So we have 12 csv files (1GB in total). Let's use RStudio to read these files and look at its content.
+
+At first, load libraries that we will use in our project (here we're loading all libraries that we need for further steps).
+
+```{r loading libraries, include=FALSE}
+#load libraries
+library("tidyverse")
+library("ggplot2")
+library("lubridate")
+library("maps")
+library("scales")
+library("ggmap")
+library("dplyr")
+```
+
+Show all files in our CSV directory:
+
+```{r getting files list}
+#find all files in directory with datasets and put filenames into a list
+datasets_dir <- paste(getwd(), "/Datasets/csv/2022", sep = "")
+files_list <- dir(datasets_dir)
+files_list
+```
+
+We can open these files in spreadsheets (Excel or Google Sheets) to make a description of the data, but the files are too big to use spreadsheets, so we will use R.
+
+Let's read the files using `read_csv` function and union all files into one dataframe. Check if every file has the same columns, using `colnames` function.
+
+```{r loading dataframe, include=FALSE}
+#get first file and create dataframe with the same structure
+tripdata_2022 <- read_csv(paste(datasets_dir, files_list[1], sep = "/"))[0, ]
+colnames_2022 <- colnames(tripdata_2022)
+
+#add data for every month into dataframe
+for (f in files_list){
+  df_month <- read_csv(paste(datasets_dir, f, sep = "/"))
+  colnames_month <- colnames(df_month)
+  if (length(setdiff(colnames_2022, colnames_month)) > 0){
+    print("Inappropriate column names.")
+  } else {
+    tripdata_2022 <- dplyr::union(tripdata_2022, df_month)
+  }
+}
+```
+
+Now we have one dataset for all 2022 year, it'll help us to analyze data faster and more efficient. Let's take a look at the dataset. Show column names and datatypes with \`glimpse\` function.
+
+```{r glimpse of dataset}
+#show columns and formats
+glimpse(tripdata_2022)
+```
+
+It has 13 columns and 5 667 717 rows. Here is description for every column:
+
+1.  ride_id (string) - identifier for a ride;
+2.  rideable_type (string) - bike type (electric_bike, classic_bike, docked_bike)
+3.  started_at (datetime) - trip start date and time
+4.  ended_at (datetime) - trip end date and time
+5.  start_station_name (string) - start trip station name
+6.  start_station_id (string) - start trip station ID
+7.  end_station_name (string) - end trip station name
+8.  end_station_id (string) - end trip station ID
+9.  start_lat (double) - start trip latitude
+10. start_lng (double) - start trip longitude
+11. end_lat (double) - end trip latitude
+12. end_lng (double) - end trip longitude
+13. member_casual (string) - type of membership (casual/member)
+
+```{r show distinct values for rideable_type column}
+#show all types of bikes
+tripdata_2022 %>% 
+  distinct(rideable_type)
+```
+
+```{r show distinct values for member_casual column}
+#show all kinds of member_casual column values
+tripdata_2022 %>% 
+  distinct(member_casual)
+```
+
+Let's sort our dataframe by `started_at` column and find the range of the dataset (min and max ride date):
+
+```{r sorting dataframe}
+#sort data by ride date
+sorted_tripdata_2022 <- tripdata_2022 %>%
+  arrange(started_at)
+```
+
+```{r find min and max date}
+#show range for ride dates
+cat("MIN date = ", format(date(min(sorted_tripdata_2022$started_at)), format = "%d.%m.%Y"), "; ",  "MAX date = ", format(date(max(sorted_tripdata_2022$started_at)), format = "%d.%m.%Y"))
+```
+
+**Deliverable:[\
+[*✓*] *A description of all data sources used*]{.underline}**
+
+## Process
+
+We have the large dataset (more than 5 mio rows in total) and it's better to use programming languages (R, Python) or SQL for data cleaning and analysis. We'll continue using R for these purposes.
+
+Let's add a new column with trip duration (numeric) and separate date and time for ride beginning (column `started_at`). We'll use `mutate` function and create a new dataframe not to spoil initial dataframe. Convert trip duration into minutes:
+
+```{r add trip duration and separate datetime columns}
+#calculate trip duration, trip date and trip time
+tripdata_2022_clean <- sorted_tripdata_2022 %>%
+  mutate(trip_duration = as.numeric(ended_at - started_at)/60) %>%
+  mutate(trip_date = date(started_at)) %>%
+  mutate(trip_start_time = hms::as_hms(started_at))
+```
+
+Then add a new column for weekday (string):
+
+```{r add weekday}
+#calculate weekdays for trip date
+tripdata_2022_clean <- tripdata_2022_clean %>%
+  mutate(trip_weekday = wday(trip_date, label = TRUE, locale = "eb_EN.UTF-8"))
+```
+
+Now we can delete unused columns:
+
+```{r delete columns}
+#delete unused columns
+tripdata_2022_clean <- tripdata_2022_clean %>%
+  dplyr::select(-started_at, -ended_at, -start_station_name, -start_station_id, -end_station_name, -end_station_id)
+```
+
+Check data for incorrect values: delete rows where value of `trip_duration` field is less or equal 0.
+
+```{r checking for incorrect values}
+#delete rides with trip duration less then 0
+tripdata_2022_clean <- tripdata_2022_clean %>%
+  filter(trip_duration > 0)
+```
+
+Also we can see that our dataset contains very short rides (even several seconds). Let's show distribution of number of rides for trip duration.
+
+```{r trip duration distribution, message=FALSE, warning=FALSE}
+#show trip rides distribution
+tripdata_2022_clean %>%
+  group_by(trip_duration, member_casual) %>%
+  summarize(count_trips = n()) %>%
+  filter(trip_duration <= 10) %>%
+  ggplot(aes(x=trip_duration, y = count_trips, fill = member_casual)) + 
+    geom_col() +
+    labs(x = "Trip duration (min)", y = "Number of trips", title = "Trip duration distribution")
+```
+
+We can assume that rides with length less then 1 minute weren't the real rides and were started by mistake. So let's not consider them in our analyze.
+
+```{r checking for improper values}
+#delete rides with trip duration less then 1 minute
+tripdata_2022_clean <- tripdata_2022_clean %>%
+  filter(trip_duration >= 1)
+```
+
+At the end we'll get a clean dataframe. Let's show the main characteristics of our dataframe and its statistical summary:
+
+```{r check dataframe}
+#show dataframe description
+cat("Column names: ", colnames(tripdata_2022_clean), sep=",", "\n")
+cat("Number of rows", nrow(tripdata_2022_clean), "\n")
+cat("Dimensions: ", dim(tripdata_2022_clean), "\n")
+cat("List of columns with datatypes: ", "\n")
+print(str(tripdata_2022_clean))
+```
+
+```{r see summary data}
+#show data summary
+cat("Statistical summary of data: ", "\n")
+summary(tripdata_2022_clean)
+```
+
+```{r head of the dataframe}
+#show first rows
+head(tripdata_2022_clean)
+```
+
+**Deliverable:[\
+[*✓*] *Documentation of any cleaning or manipulation of data*]{.underline}**
+
+## Analyze
+
+Now we have all columns that we need and in appropriate formats, so we can start our analysis. Let's aggregate our data to make it useful for analysis.
+
+**1.** Aggregate rides by membership type (`member_casual`) and calculate average, median, minimum and maximum trip duration.
+
+```{r analysis on trip_duration}
+#aggr data by member_casual
+tripdata_2022_clean %>%
+  group_by(membership = member_casual) %>%
+  summarise(mean_trip = mean(trip_duration), median_trip = median(trip_duration), max_trip = max(trip_duration), min_trip = min(trip_duration), count_trips = n())
+```
+
+-   **Users with annual membership made more trips during the 2022 year than casual riders (3.3 mio trips vs. 2.3 mio trips), but their trips are much shorter. Average trip for members is about 13 minutes vs. 30 minutes for casual riders. Median trip (show more frequent trip length and decrease influence of too short or too long trips) is also longer for casual riders: 13 minutes vs. 9 minute.**
+
+Let's use `filter` function to create separated dataframes for casual riders and for members. Further, we can use it to find differences between two types of riders.
+
+```{r filter data for casual riders}
+#only casual riders
+tripdata_2022_casual <- filter(tripdata_2022_clean, member_casual == "casual")
+```
+
+```{r filter data for members}
+#only annual members
+tripdata_2022_member <- filter(tripdata_2022_clean, member_casual == "member")
+```
+
+**2.** Look at the rides distribution for both types of riders by months:
+
+```{r trip duration by months, warning=FALSE}
+#aggr by months
+aggr_month <- tripdata_2022_clean %>%
+  group_by(member_casual, month = month(trip_date, label = TRUE, locale = "eb_EN.UTF-8")) %>%
+  summarize(mean_trip = mean(trip_duration), median_trip = median(trip_duration), max_trip = max(trip_duration), min_trip = min(trip_duration), count_trips = n())
+
+#show the results
+aggr_month %>% arrange(member_casual, month)
+```
+
+Create visualizations for distribution by months:
+
+```{r viz number of rides by months}
+#plot: number of rides by months
+ggplot(data = aggr_month, aes(x = month, y = count_trips, fill = member_casual)) + 
+  geom_col(position = "dodge") +
+  labs(x = "Month", y = "Number of riders", title = "Casual riders vs. annual members by month", subtitle = "Distribution number of rides") +
+  scale_y_continuous(labels = label_number(suffix = " K", scale = 1e-3)) +
+  guides(fill = guide_legend(title = "Membership"))
+```
+
+```{r viz duration by months, warning=FALSE}
+#plot duration by months
+ggplot(data = aggr_month) + 
+  geom_col(aes(x = month, y = mean_trip, fill = member_casual), position = "dodge") + 
+  geom_point(aes(x = month, y = median_trip, shape = member_casual), color = "blue", size = 3) +
+  labs(x = "Month", y = "Average trip length", shape = "Median", fill = "Mean", title = "Casual riders vs. annual members by month", subtitle = "Distribution trip length") +
+  scale_y_continuous(labels = label_number(suffix = " min"))
+```
+
+-   **Both types of riders have almost the same number of trips during summer month (June and July). And number of trips for casual riders is the lowest in winter months (less than 50 thousands a month).**
+
+**3.** Aggregate rides by day of the week:
+
+```{r trip duration by weekdays}
+#aggr by weekday
+aggr_weekday <- tripdata_2022_clean %>%
+  group_by(member_casual, weekday = trip_weekday) %>%
+  summarize(mean_trip = mean(trip_duration), median_trip = median(trip_duration), max_trip = max(trip_duration), min_trip = min(trip_duration), count_trips = n())
+
+#show the results
+aggr_weekday %>% arrange(member_casual, weekday)
+```
+
+Create visualizations for distribution by day of the week:
+
+```{r viz number of rides by weekdays}
+#plot number of rides by weekdays 
+ggplot(data = aggr_weekday, aes(x = weekday, y = count_trips, fill = member_casual)) +    
+  geom_col(position = "dodge") +   
+  labs(x = "Weekday", y = "Number of riders", title = "Casual riders vs. annual members by weekdays", subtitle = "Distribution number of rides") +   
+  scale_y_continuous(labels = label_number(suffix = " K", scale = 1e-3)) +   
+  guides(fill = guide_legend(title = "Membership"))
+```
+
+```{r viz duration by weekdays, warning=FALSE}
+#plot trip duration by weekday 
+ggplot(data = aggr_weekday) +    
+  geom_col(aes(x = weekday, y = mean_trip, fill = member_casual), position = "dodge") +    
+  geom_point(aes(x = weekday, y = median_trip, shape = member_casual), color = "blue", size = 3) +   
+  labs(x = "Weekday", y = "Average trip length", shape = "Median", fill = "Mean", title = "Casual riders vs. annual members by weekday", subtitle = "Distribution trip length") +   
+  scale_y_continuous(labels = label_number(suffix = " min"))
+```
+
+Show distribution by weekdays and hours:
+
+```{r viz number of rides by weekdays and hours }
+#aggr by weekday and hour
+aggr_weekday_hour <- tripdata_2022_clean %>%
+  group_by(member_casual, weekday = trip_weekday, hour_start = hour(trip_start_time)) %>%
+  summarize(count_trips = n())
+
+#plot number of rides by weekdays 
+ggplot(data = aggr_weekday_hour, aes(x = hour_start, y = count_trips, fill = member_casual)) +    
+  geom_col(position = "dodge") +   
+  labs(x = "Hour", y = "Number of riders", title = "Casual riders vs. annual members by hours", subtitle = "Distribution number of rides for every week day") +   
+  scale_y_continuous(labels = label_number(suffix = " K", scale = 1e-3)) +   
+  guides(fill = guide_legend(title = "Membership")) +
+  facet_wrap(~weekday, nrow=4)
+```
+
+-   **Annual members make more trips on workdays and casual riders rent bike more often on weekends. We can see that casual riders take even more rides on weekends than members. Also both types of riders make longer rides during weekends. And they behave almost the same way on Sunday and Saturday. But on work days we can see that annual members more often use bicycles about 8-9 a.m. and 17-18 p.m., so they use it to get to the workplace and to come back home.**
+
+**4.** Aggregate rides by bike types (`rideable_type`).
+
+```{r group by rideable_type}
+#aggr by rideable_type
+aggr_type <- tripdata_2022_clean %>% 
+  group_by(member_casual, rideable_type) %>%
+  summarize(mean_trip = mean(trip_duration), median_trip = median(trip_duration), max_trip = max(trip_duration), min_trip = min(trip_duration), count_trips = n())
+
+#show the results
+aggr_type %>% arrange(member_casual, rideable_type)
+```
+
+Create visualizations for distribution by bicycle type:
+
+```{r viz number of rides by rideable_type}
+#plot number of rides by rideable_type
+ggplot(data = aggr_type, aes(x = rideable_type, y = count_trips, fill = member_casual)) + 
+  geom_col(position = "dodge") +
+  labs(x = "Bicycle type", y = "Number of riders", title = "Casual riders vs. annual members by bicycle type", subtitle = "Distribution number of rides") +
+  scale_y_continuous(labels = label_number(suffix = " K", scale = 1e-3)) +
+  guides(fill = guide_legend(title = "Membership"))
+```
+
+```{r viz duration by rideable_type, warning=FALSE}
+#plot trip duration by rideable_type
+ggplot(data = aggr_type) + 
+  geom_col(aes(x = rideable_type, y = mean_trip, fill = member_casual), position = "dodge") + 
+  geom_point(aes(x = rideable_type, y = median_trip, shape = member_casual), color = "blue", size = 3) +
+  labs(x = "Bike type", y = "Average trip length", shape = "Median", fill = "Mean", title = "Casual riders vs. annual members by bicycle type", subtitle = "Distribution trip length") +
+  scale_y_continuous(labels = label_number(suffix = " min"))
+```
+
+-   **Only casual riders use docked bikes in 2022 year. They used this type of bikes less often but trip duration is much longer then for classic and electric bikes: average trip length is more than 2 hours and median trip is 28 minutes.**
+
+**5.** Let's look at the most popular starting points for casual riders and members on the map.
+
+Leave only TOP 100 the most popular starting stations for casual riders and for annual members.
+
+```{r filter out the most popular points for casual riders}
+#top 100 popular casual stations
+tripdata_2022_casual_top <- tripdata_2022_casual %>%
+  #filter(start_lat != end_lat & start_lng != end_lng) %>%
+  group_by(member_casual, start_lat, start_lng, end_lat, end_lng, rideable_type) %>%
+  summarize(count = n(), .groups = "drop") %>%
+  arrange(-count) %>%
+  slice(1:100)
+head(tripdata_2022_casual_top)
+```
+
+```{r filter out the most popular points for members}
+#top 100 popular members stations
+tripdata_2022_member_top <- tripdata_2022_member %>%
+  #filter(start_lat != end_lat & start_lng != end_lng) %>%
+  group_by(member_casual, start_lat, start_lng, end_lat, end_lng, rideable_type) %>%
+  summarize(count = n(), .groups = "drop") %>%
+  arrange(-count) %>%
+  slice(1:100)
+head(tripdata_2022_member_top)
+```
+
+Unite data frames into one dataframe:
+
+```{r union top values}
+#union casual and members
+tripdata_2022_top <- dplyr::union(tripdata_2022_casual_top, tripdata_2022_member_top)
+```
+
+Show the most popular stations on the map:
+
+```{r create map of Chicago, warning=FALSE, include=FALSE}
+#create shape for map
+chicago <- c(left = -87.700424, bottom = 41.790769, right = -87.554855, top = 41.990119)
+
+#create Chicago map
+chicago_map <- get_stamenmap(bbox = chicago, zoom = 12, maptype = "terrain")
+```
+
+```{r map, warning=FALSE}
+# maps of Chicago
+ggmap(chicago_map, darken = c(0.1, "white")) +
+  #add points
+  geom_point(tripdata_2022_top, mapping = aes(x = start_lng, y = start_lat, shape = member_casual, color = member_casual), size = 2)  +
+   coord_fixed(0.75) +
+   labs(title = "Most popular picking points", x="", y="", shape = "Membership", color = "Membership")
+```
+
+-   **We can notice that the stations close to the seaside is more popular for casual riders. Annual members use station all over the city.**
+
+**Deliverable:[\
+[*✓*] *A summary of your analysis*]{.underline}**
+
+## Share
+
+**Let's explore our visualizations and summarize the differences between members and casual riders:**
+
+1)  Users with annual membership made more trips during the 2022 year than casual riders, but their trips are much shorter.
+
+2)  Casual riders make almost the same number of rides in summer months (June and July) and significantly less rides in other seasons.
+
+3)  Casual riders use Cyclistic almost the same way as annual members on weekends (Saturday and Sunday). But annual members prefer work days for their rides. Also during work days annual members more often take rides to get to work and back than casual riders.
+
+4)  Only casual riders used docked bikes in 2022 year. They used this type of bikes less often but trip duration was much longer then for classic and electric bikes.
+
+5)  We can notice that the stations close to the seaside is more popular for casual riders. Annual members use station all over the city.
+
+**Deliverable:[\
+[*✓*] *Supporting visualizations and key findings*]{.underline}**
+
+## Act
+
+According to findings we have found and visualizations above, here are top three recommendations for the stakeholders:
+
+1.  Find clients who behave like annual members (use bicycles for getting to work and back, make many shorts trips) and suggest them membership. We need additional data with clients IDs for this purpose.
+
+2.  Create promotion for special prices for annual members on weekends (Saturdays and Sundays). That can attract more casual riders that use bike-sharing on weekends to buy annual subscription.
+
+3.  Find places for new stations inside the city that also can attract new members. We need a survey to find out where people are more likely to use bicycles regularly.
+
+
+**Deliverable:[\
+[*✓*] *Your top three recommendations based on your analysis*]{.underline}**
+
+
