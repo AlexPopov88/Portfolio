@@ -8,4 +8,15 @@ Recently I've decided to make a new step in my career. And I really excited abou
 
 ## 📚 Project list:  
 
-+ [How Does a Bike-Share Navigate Speedy Success?](https://github.com/AlexPopov88/Portfolio/blob/main/Projects/Cyclistic%20bike-share%20analysis.Rmd) 
+|    | Project | Results |
+|--------|----------|--------|
+| 1 | [How Does a Bike-Share Navigate Speedy Success?](https://github.com/AlexPopov88/Portfolio/blob/main/Projects/Cyclistic%20bike-share%20analysis.Rmd) | [PDF](https://github.com/AlexPopov88/Portfolio/blob/main/Projects/Cyclistic%20bike-share%20analysis.pdf) | 
+| 2 |  |  |
+
+
+### Separate code examples:
++ [Python](https://github.com/AlexPopov88/Portfolio/blob/main/Code%20examples/Python_HSE_Demo%20Test.ipynb)
++ [SQL Data Cleaning](https://github.com/AlexPopov88/Portfolio/blob/main/Code%20examples/SQL_cleaning_data.sql)
++ [SQL COVID Deaths and vaccinations](https://github.com/AlexPopov88/Portfolio/blob/main/Code%20examples/SQL_COVID%20deaths%20and%20vaccinations.sql)
+
+  
