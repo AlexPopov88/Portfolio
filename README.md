@@ -8,15 +8,15 @@ Recently I've decided to make a new step in my career. And I really excited abou
 
 ## 📚 Project list:  
 
-|    | Project | Results |
-|--------|----------|--------|
-| 1 | [How Does a Bike-Share Navigate Speedy Success?](https://github.com/AlexPopov88/Portfolio/blob/main/Projects/Cyclistic%20bike-share%20analysis.Rmd) | [PDF](https://github.com/AlexPopov88/Portfolio/blob/main/Projects/Cyclistic%20bike-share%20analysis.pdf) | 
-| 2 |  |  |
+|    | Project | Results | Comments |
+|--------|----------|--------|----------------------------|
+| 1 | [How Does a Bike-Share Navigate Speedy Success?](https://github.com/AlexPopov88/Portfolio/blob/main/Projects/Cyclistic%20bike-share%20analysis.Rmd) | [PDF](https://github.com/AlexPopov88/Portfolio/blob/main/Projects/Cyclistic%20bike-share%20analysis.pdf) | Case study from Google Data Analytics capstone project. My first experience in R programming language |
+| 2 |  |  |  |
 
 
 ### Separate code examples:
-+ [Python](https://github.com/AlexPopov88/Portfolio/blob/main/Code%20examples/Python_HSE_Demo%20Test.ipynb)
-+ [SQL Data Cleaning](https://github.com/AlexPopov88/Portfolio/blob/main/Code%20examples/SQL_cleaning_data.sql)
-+ [SQL COVID Deaths and vaccinations](https://github.com/AlexPopov88/Portfolio/blob/main/Code%20examples/SQL_COVID%20deaths%20and%20vaccinations.sql)
++ [Python](https://github.com/AlexPopov88/Portfolio/blob/main/Code%20examples/Python_HSE_Demo%20Test.ipynb). Demo test from High School of Economics course "Mathematical Statistics with Python".
++ [SQL Data Cleaning](https://github.com/AlexPopov88/Portfolio/blob/main/Code%20examples/SQL_cleaning_data.sql). Example of using SQL for Data Cleaning from YouTube course "Data Analyst Bootcamp".
++ [SQL COVID Deaths and vaccinations](https://github.com/AlexPopov88/Portfolio/blob/main/Code%20examples/SQL_COVID%20deaths%20and%20vaccinations.sql). Example of using SQL for Data filtering, aggregating, subquering, joining, using CTE from YouTube course "Data Analyst Bootcamp".
 
   
