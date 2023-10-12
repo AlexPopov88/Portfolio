@@ -11,7 +11,7 @@ Recently I've decided to make a new step in my career. And I really excited abou
 |    | Project | Results | Comments |
 |--------|----------|--------|----------------------------|
 | 1 | [How Does a Bike-Share Navigate Speedy Success?](https://github.com/AlexPopov88/Portfolio/blob/main/Projects/Cyclistic%20bike-share%20analysis.Rmd) | [PDF](https://github.com/AlexPopov88/Portfolio/blob/main/Projects/Cyclistic%20bike-share%20analysis.pdf) | Case study from Google Data Analytics capstone project. My first experience in R programming language |
-| 2 |  |  |  |
+| 2 | [How Can a Wellness Technology Company Play It Smart?](https://github.com/AlexPopov88/Portfolio/blob/main/Projects/Bellabeat%20wellness%20analysis.ipynb) | [PDF](https://github.com/AlexPopov88/Portfolio/blob/main/Projects/Bellabeat%20wellness%20analysis.pdf) | Second case study from Google Data Analytics capstone project. Creatin in Jupiter notebook using Python with some usefull libraries: pandas, numpy, matplotlib, seaborn.|
 
 
 ### Separate code examples:
