@@ -19,7 +19,7 @@ Thank you for visiting my portfolio! Feel free to explore my projects, and don�
 |--------|----------|--------|----------------------------|
 | 1 | [How Does a Bike-Share Navigate Speedy Success?](https://github.com/AlexPopov88/Portfolio/blob/main/Projects/Cyclistic%20bike-share/Cyclistic%20bike-share%20analysis.Rmd) | [PDF](https://github.com/AlexPopov88/Portfolio/blob/main/Projects/Cyclistic%20bike-share/Cyclistic%20bike-share%20analysis.pdf) | Case study from the Google Data Analytics Capstone Project – my first hands-on experience with R programming. |
 | 2 | [How Can a Wellness Technology Company Play It Smart?](https://github.com/AlexPopov88/Portfolio/blob/main/Projects/Bellabeat/Bellabeat%20wellness%20analysis.ipynb) | [PDF](https://github.com/AlexPopov88/Portfolio/blob/main/Projects/Bellabeat/Bellabeat%20wellness%20analysis.pdf) | Second case study from Google Data Analytics capstone project. Created in Jupiter notebook using Python with some usefull libraries: pandas, numpy, matplotlib, seaborn.|
-| 3 | [Relocation Service](https://github.com/AlexPopov88/Portfolio/blob/main/Projects/Relocation/relocation-service.ipynb) | | Second case study from the Google Data Analytics Capstone Project – created in Jupyter Notebook using Python and key libraries such as pandas, numpy, matplotlib, and seaborn.|
+| 3 | [Relocation Service](https://github.com/AlexPopov88/Portfolio/blob/main/Projects/Relocation/relocation-service.ipynb) | [Tableau](https://public.tableau.com/app/profile/aleksandr6182/viz/Relocationservice/Dashboard1) | Second case study from the Google Data Analytics Capstone Project – created in Jupyter Notebook using Python and key libraries such as pandas, numpy, matplotlib, and seaborn.|
 
 
 ### Separate code examples:
